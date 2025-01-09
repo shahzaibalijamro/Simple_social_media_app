@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/users.models.js"
+import User from "../models/user.models.js"
 import { generateAccessandRefreshTokens } from "../utils/token.utils.js";
 const verifyRequest = async (req, res, next) => {
     const accessToken = req.headers["authorization"]?.split(' ')[1];

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Post from "../models/post.models.js";
 import User from "../models/user.models.js";
-import { uploadImageToCloudinary } from "../utils/cloudinary.utils";
+import { uploadImageToCloudinary } from "../utils/cloudinary.utils.js";
 
 const createPost = async (req,res) => {
     const {content} = req.body;

@@ -1,17 +1,15 @@
 import mongoose from "mongoose";
 import Post from "../models/post.models.js";
 import User from "../models/user.models.js";
-import Like from "../models/like.models.js"
+import Like from "../models/like.models.js";
+import Comment from "../models/comment.models.js"
 import { uploadImageToCloudinary } from "../utils/cloudinary.utils.js";
 
 const createPost = async (req,res) => {
     const {content} = req.body;
     const user = req.user;
     const file = req.file ? req.file.path : "";
-    console.log(content);
-    console.log(user._id);
-    console.log(file);
-    
+    const accessToken = req.tokens ? req.tokens.accessToken : "";
     let session;
     try {
         if ((!content || content.trim() === "") && !file) {
@@ -41,7 +39,8 @@ const createPost = async (req,res) => {
         await session.commitTransaction();
         return res.status(200).json({
             message: "Post created!",
-            post
+            post,
+            ...(accessToken && {accessToken})
         })
     } catch (error) {
         console.log(error);
@@ -57,6 +56,7 @@ const createPost = async (req,res) => {
 const likePost = async (req,res) => {
     const user = req.user;
     const {postId} = req.params;
+    const accessToken = req.tokens ? req.tokens.accessToken : "";
     let session;
     try {
         if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
@@ -82,6 +82,7 @@ const likePost = async (req,res) => {
         await session.commitTransaction();
         return res.status(200).json({
             message: "Post liked",
+            ...(accessToken && {accessToken})
         })
     } catch (error) {
         console.log(error);
@@ -112,4 +113,53 @@ const getAllPosts = async (req, res) => {
     }
 }
 
-export {createPost,likePost,getAllPosts}
+const addComment = async (req,res) => {
+    const {text} = req.body;
+    const {postId} = req.params;
+    const user = req.user;
+    const accessToken = req.tokens ? req.tokens.accessToken : "";
+    let session;
+    try {
+        if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
+            return res.status(400).json({
+                message: "Post Id is required and must be valid!"
+            })
+        }
+        if (!text || text.trim() === "") {
+            return res.status(400).json({
+                message: "Comment text is required!"
+            })
+        }
+        session = await mongoose.startSession();
+        session.startTransaction();
+        const post = await Post.findById(postId).session(session);
+        if (!post) {
+            await session.abortTransaction()
+            return res.status(404).json({
+                message: "Post does not exist!"
+            })
+        }
+        const comment = await Comment.create([{
+            userId: user._id,
+            postId,
+            text,
+        }],{session});
+        //update Post comments
+        await Post.findByIdAndUpdate(post._id,{$push: {comments: comment[0]._id}},{session});
+        await session.commitTransaction();
+        return res.status(200).json({
+            message: "Comment added",
+            ...(accessToken && {accessToken})
+        })
+    } catch (error) {
+        console.log(error);
+        if (session) await session.abortTransaction()
+        return res.status(500).json({
+            message: "Something went wrong!"
+        })
+    }finally{
+        if (session) await session.endSession()
+    }
+}
+
+export {createPost,likePost,getAllPosts,addComment}

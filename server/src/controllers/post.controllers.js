@@ -7,6 +7,10 @@ const createPost = async (req,res) => {
     const {content} = req.body;
     const user = req.user;
     const file = req.file ? req.file.path : "";
+    console.log(content);
+    console.log(user._id);
+    console.log(file);
+    
     let session;
     try {
         if ((!content || content.trim() === "") && !file) {
@@ -29,7 +33,7 @@ const createPost = async (req,res) => {
         const post = await Post.create([{
             content: content || "",
             media: media || "",
-            user: user._id,
+            userId: user._id,
         }],{session});
         //update user posts
         await User.findByIdAndUpdate(user._id,{$push: {posts: post[0]._id}},{session});

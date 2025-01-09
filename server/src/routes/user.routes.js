@@ -1,7 +1,7 @@
 import express from "express"
 import {  deleteUser, getAllUsers, loginUser,registerUser} from "../controllers/users.controllers.js";
-import { upload } from "../middlewares/multer.middleware.js";
-import { verifyRequest } from "../middlewares/auth.middelwares.js";
+import { upload } from "../middlewares/multer.middlewares.js";
+import { verifyRequest } from "../middlewares/auth.middlewares.js";
 const userRouter = express.Router();
 
 //get all users

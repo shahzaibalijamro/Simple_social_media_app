@@ -2,12 +2,10 @@ import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
     content: {
-        type: String,
-        required: [true,"Content is required!"]
+        type: String
     },
     media:{
-        type: String,
-        required: [true,"Media is required!"]
+        type: String
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,

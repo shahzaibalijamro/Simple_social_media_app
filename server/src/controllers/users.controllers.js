@@ -109,24 +109,4 @@ const deleteUser = async (req, res) => {
 };
 
 
-const getAllUsers = async (req, res) => {
-    const page = req.query?.page || 1;
-    const limit = req.query?.limit || 10;
-    console.log(page);
-    const skip = (+page - 1) * +limit;
-    try {
-        const allUsers = await User.find({}).skip(skip).limit(limit);
-        if (allUsers.length === 0) return res.status(200).json({
-            message: "no data left!"
-        })
-        res.status(200).json(allUsers)
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "Something went wrong",
-        })
-    }
-}
-
-
-export { registerUser, getAllUsers, loginUser, deleteUser }
+export { registerUser, loginUser, deleteUser }

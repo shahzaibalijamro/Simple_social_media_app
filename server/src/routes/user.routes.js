@@ -1,11 +1,8 @@
 import express from "express"
-import {  deleteUser, getAllUsers, loginUser,registerUser} from "../controllers/users.controllers.js";
+import {  deleteUser, loginUser,registerUser} from "../controllers/users.controllers.js";
 import { upload } from "../middlewares/multer.middlewares.js";
 import { verifyRequest } from "../middlewares/auth.middlewares.js";
 const userRouter = express.Router();
-
-//get all users
-userRouter.get("/all",getAllUsers)
 
 //register User
 userRouter.post("/register", upload.single("image"), registerUser)

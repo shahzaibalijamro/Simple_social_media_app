@@ -6,7 +6,7 @@ import Link from "next/link"
 
 export default function Login() {
     return (
-        <div className="w-full h-[90vh] flex justify-center items-center">
+        <div className="w-full px-3 h-[90vh] flex justify-center items-center">
             <Card className="mx-auto w-full max-w-[640px]">
                 <CardHeader>
                     <CardTitle className="text-3xl text-[#1e40af]">Login</CardTitle>

@@ -43,6 +43,9 @@ const Card = ({username,image,likes,comments,time}:Card) => {
                     <div><h1 className='text-sm text-gray-600 font-medium'>{calculateDays(time)} ago</h1></div>
                 </div>
             </div>
+            <div className='text-start mt-3 px-1 text-gray-600'>
+                <h1 className='text-[15px]'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore vitae possimus sint repellat, animi nulla labore beatae repellendus, in aliquam quis hic cupiditate at dolor? Impedit delectus dolores minima amet?</h1>
+            </div>
             <div className='w-full bg-gray-200 rounded-xl flex justify-center items-center mt-3 mb-2'>
                 <img src={image} alt="" />
             </div>

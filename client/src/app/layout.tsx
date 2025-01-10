@@ -30,7 +30,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f2f4f7]`}
       >
         <Header/>
-        <InputForm/>
         {children}
       </body>
     </html>

@@ -10,14 +10,19 @@ interface Card{
     image: string,
     likes: number,
     comments: number,
-    time: number
+    time: string,
+    text: string
 }
-const Card = ({username,image,likes,comments,time}:Card) => {
-    const calculateDays = (hours:number) => {
-        const calc = hours / 24;
+const Card = ({username,image,likes,comments,time,text}:Card) => {
+    const createdDate = new Date(time);
+    const now = Date.now();
+    const diffInMs = now - createdDate.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const calculateDays = (diffInHours:number) => {
+        const calc = diffInHours / 24;
         const calc2 = calc.toString()[0];
-        const calc3 = hours - +calc2 * 24;
-        if (hours === 24) {
+        const calc3 = diffInHours - +calc2 * 24;
+        if (diffInHours === 24) {
             return '1 day'
         }
         if(calc > 1){
@@ -28,7 +33,7 @@ const Card = ({username,image,likes,comments,time}:Card) => {
 
             }
         }
-        return `${hours} hrs`
+        return `${diffInHours} hrs`
     }
     return (
         <div className='max-w-[640px] mb-4 bg-white rounded-[8px] border border-gray-300 p-3 mx-4 sm:mx-auto'>
@@ -40,15 +45,15 @@ const Card = ({username,image,likes,comments,time}:Card) => {
                 </div>
                 <div>
                     <div><h1 className='font-medium'>{username}</h1></div>
-                    <div><h1 className='text-sm text-gray-600 font-medium'>{calculateDays(time)} ago</h1></div>
+                    <div><h1 className='text-sm text-gray-600 font-medium'>{calculateDays(diffInHours)} ago</h1></div>
                 </div>
             </div>
-            <div className='text-start mt-3 px-1 text-gray-600'>
-                <h1 className='text-[15px]'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore vitae possimus sint repellat, animi nulla labore beatae repellendus, in aliquam quis hic cupiditate at dolor? Impedit delectus dolores minima amet?</h1>
-            </div>
-            <div className='w-full bg-gray-200 rounded-xl flex justify-center items-center mt-3 mb-2'>
+            {text && <div className='text-start mt-3 px-1 text-gray-600'>
+                <h1 className='text-[15px]'>{text}</h1>
+            </div>}
+            {image && <div className='w-full bg-gray-200 rounded-xl flex justify-center items-center mt-3 mb-2'>
                 <img src={image} alt="" />
-            </div>
+            </div>}
             <div className='flex justify-between mb-2 items-center'>
                 <div className='flex justify-start ps-2 gap-x-1 items-center'>
                     <Image src={BlueLike} width={19} alt='reaction' />

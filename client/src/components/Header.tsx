@@ -2,6 +2,7 @@ import React from 'react'
 import { Button } from './ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from './ui/dropdown-menu'
+import Link from 'next/link'
 
 const Header = () => {
     const name = "Shahzaib Ali"
@@ -19,7 +20,9 @@ const Header = () => {
                         <DropdownMenuItem className='cursor-pointer'>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <Link href="/register">
                 <Button className='bg-white transition hover:translate-y-[2px] hover:text-black hover:bg-white text-black'>Signup</Button>
+                </Link>
             </div>
         </div>
     )

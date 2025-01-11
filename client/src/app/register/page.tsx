@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-
+import axios from "@/config/axiosConfig"
 interface tokenState {
     token: {
         accessToken: string,
@@ -10,8 +10,17 @@ interface tokenState {
 
 const page = () => {
     const accessToken = useSelector((state: tokenState) => state.token.accessToken);
+    const authenticateUserState = async () =>{
+        try {
+            const {data} = await axios.post("/protected");
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
     useEffect(()=>{
-        const token = localStorage.getItem("accessToken");
+        authenticateUserState();
     },[])
     console.log(accessToken);
     return (

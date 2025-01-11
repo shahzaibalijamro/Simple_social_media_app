@@ -5,7 +5,7 @@ import Like from "@/assets/like.png"
 import Comment from "@/assets/chat.png"
 import Image from 'next/image';
 import BlueLike from "@/assets/like (1).png";
-interface Card{
+interface Card {
     username: string,
     image: string,
     likes: number,
@@ -13,30 +13,34 @@ interface Card{
     time: string,
     text: string
 }
-const Card = ({username,image,likes,comments,time,text}:Card) => {
+const Card = ({ username, image, likes, comments, time, text }: Card) => {
     const createdDate = new Date(time);
     const now = Date.now();
     const diffInMs = now - createdDate.getTime();
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const calculateDays = (diffInHours:number) => {
+    const calculateDays = (diffInHours: number) => {
         const calc = diffInHours / 24;
         const calc2 = calc.toString()[0];
         const calc3 = diffInHours - +calc2 * 24;
         if (diffInHours === 24) {
             return '1 day'
         }
-        if(calc > 1){
+        if (calc > 1) {
             if (calc2 === "1") {
                 if (calc3 === 0) {
-                    return `${calc2} day`
-                }else{
-                    return `${calc2} day and ${calc3} hours`
+                    return `${calc2} day`;
+                } else if (calc3 === 1) {
+                    return `${calc2} day and ${calc3} hour`;
+                } else {
+                    return `${calc2} day and ${calc3} hours`;
                 }
-            }else{
+            } else {
                 if (calc3 === 0) {
-                    return `${calc2} days`
-                }else{
-                    return `${calc2} days and ${calc3} hours`
+                    return `${calc2} days`;
+                } else if (calc3 === 1) {
+                    return `${calc2} days and ${calc3} hour`;
+                } else {
+                    return `${calc2} days and ${calc3} hours`;
                 }
             }
         }
@@ -47,7 +51,7 @@ const Card = ({username,image,likes,comments,time,text}:Card) => {
             <div className='flex gap-x-3 justify-start items-center'>
                 <div>
                     <Avatar className='w-9 h-9'>
-                        <AvatarFallback>{username[0]+username[1]}</AvatarFallback>
+                        <AvatarFallback>{username[0] + username[1]}</AvatarFallback>
                     </Avatar>
                 </div>
                 <div>

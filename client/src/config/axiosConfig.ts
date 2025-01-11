@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://simple-social-media-app-server.vercel.app/api/v1',
+  baseURL: 'https://simple-social-media-app-server-j5qer8wok.vercel.app/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
+  // withCredentials: true,
 });
 
 export default axiosInstance;

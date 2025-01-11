@@ -1,5 +1,4 @@
 "use client"
-
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/sonner"
 import { Label } from "@/components/ui/label"
@@ -9,12 +8,17 @@ import Link from "next/link"
 import { FormEvent, useState } from "react"
 import { toast } from "sonner"
 import axios from "@/config/axiosConfig"
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setAccessToken } from "@/config/redux/reducers/tokenSlice";
 export default function Register() {
+    const router = useRouter();
     const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com|hotmail\.com|icloud\.com)$/;
     const [userName, setUserName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
+    const dispatch = useDispatch();
     const registerUser = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!emailRegex.test(email)) {
@@ -40,13 +44,18 @@ export default function Register() {
                 userName,email,password
             })
             localStorage.setItem("accessToken",data.accessToken);
+            console.log(data);
+            dispatch(setAccessToken({token: data.accessToken}));
             toast("Successfully registered!", {
-                description: `Welcome aboard ${data.userName}`,
+                description: `Welcome aboard ${data.user.userName}`,
                 action: {
-                    label: "Go to Home",
-                    onClick: () => console.log("Go to Home"),
+                    label: "Home",
+                    onClick: () => router.replace('/'),
                 },
             })
+            setTimeout(() => {
+                router.replace('/');
+            }, 2000);
         } catch (error:any) {
             const errorMessage = error.response?.data?.message;
             if (errorMessage === "Password does not meet the required criteria!") {

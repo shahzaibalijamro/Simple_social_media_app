@@ -1,11 +1,6 @@
 import axios from 'axios';
 
-const axiosInstance = axios.create({
-  baseURL: 'https://simple-social-media-app-server-j5qer8wok.vercel.app/api/v1',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  // withCredentials: true,
-});
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = "https://simple-social-media-app-server.vercel.app/api/v1";
 
-export default axiosInstance;
+export default axios;

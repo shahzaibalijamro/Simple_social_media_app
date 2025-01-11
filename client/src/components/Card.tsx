@@ -27,10 +27,17 @@ const Card = ({username,image,likes,comments,time,text}:Card) => {
         }
         if(calc > 1){
             if (calc2 === "1") {
-                return `${calc2} day and ${calc3} hours`
+                if (calc3 === 0) {
+                    return `${calc2} day`
+                }else{
+                    return `${calc2} day and ${calc3} hours`
+                }
             }else{
-                return `${calc2} days and ${calc3} hours`
-
+                if (calc3 === 0) {
+                    return `${calc2} days`
+                }else{
+                    return `${calc2} days and ${calc3} hours`
+                }
             }
         }
         return `${diffInHours} hrs`

@@ -61,9 +61,9 @@ export default function Register() {
             const errorMessage = error.response?.data?.message;
             if (errorMessage === "Password does not meet the required criteria!") {
                 return toast("Use a stronger password!", {
-                    description: `Your password must be at least 8 characters long and include at least one letter, one number, and one special character (e.g., @$!%*?&).`,
+                    description: `Password must be at least 8 characters long and include at least one letter, one number, and one special character (e.g., @$!%*?&).`,
                     action: {
-                        label: "Ok!",
+                        label: "ok",
                         onClick: () => console.log("Go to Home"),
                     },
                 })
@@ -72,7 +72,7 @@ export default function Register() {
                 return toast("This username is already taken!", {
                     description: `Please choose a different username as this one is not available.`,
                     action: {
-                        label: "Ok!",
+                        label: "ok",
                         onClick: () => console.log("Go to Home"),
                     },
                 })
@@ -81,7 +81,7 @@ export default function Register() {
                 return toast("Email already in use!", {
                     description: `Please use a different email address or log in if you already have an account.`,
                     action: {
-                        label: "Ok!",
+                        label: "ok",
                         onClick: () => console.log("Go to Home"),
                     },
                 })

@@ -11,6 +11,7 @@ import axios from "@/config/axiosConfig"
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setAccessToken } from "@/config/redux/reducers/tokenSlice";
+import { setUser } from "@/config/redux/reducers/userSlice";
 export default function Register() {
     const router = useRouter();
     const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com|hotmail\.com|icloud\.com)$/;
@@ -44,8 +45,8 @@ export default function Register() {
                 userName,email,password
             })
             localStorage.setItem("accessToken",data.accessToken);
-            console.log(data);
             dispatch(setAccessToken({token: data.accessToken}));
+            dispatch(setUser({user: data.user}));
             toast("Successfully registered!", {
                 description: `Welcome aboard ${data.user.userName}`,
                 action: {

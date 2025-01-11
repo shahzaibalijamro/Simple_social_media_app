@@ -7,16 +7,24 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import Link from 'next/link'
 import { useSelector } from 'react-redux'
 
-interface State {
+interface tokenState {
     token: {
         accessToken: string,
     }
 }
 
+interface userState {
+    user: {
+        user: {},
+    }
+}
+
 const Header = () => {
     const name = "Shahzaib Ali";
-    const accessToken = useSelector((state: State) => state.token.accessToken);
+    const accessToken = useSelector((state: tokenState) => state.token.accessToken);
     console.log(accessToken);
+    const user = useSelector((state:userState) => state.user.user);
+    console.log(user);
     return (
         <div className='w-full bg-[#1e40af] flex justify-between px-2 py-2 sm:px-2 sm:py-3 md:px-3 md:py-3 items-center lg:py-3 lg:px-4 xl:px-5 xl:py-3'>
             <h1 className='text-xl text-white font-normal'>Social App</h1>

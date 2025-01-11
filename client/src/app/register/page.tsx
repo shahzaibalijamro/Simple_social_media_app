@@ -58,6 +58,24 @@ export default function Register() {
                     },
                 })
             }
+            if (errorMessage === "This username is already taken.") {
+                return toast("This username is already taken!", {
+                    description: `Please choose a different username as this one is not available.`,
+                    action: {
+                        label: "Ok!",
+                        onClick: () => console.log("Go to Home"),
+                    },
+                })
+            }
+            if (errorMessage === "This email is already taken.") {
+                return toast("Email already in use!", {
+                    description: `Please use a different email address or log in if you already have an account.`,
+                    action: {
+                        label: "Ok!",
+                        onClick: () => console.log("Go to Home"),
+                    },
+                })
+            }
         }
         console.log(userName);
         console.log(email);

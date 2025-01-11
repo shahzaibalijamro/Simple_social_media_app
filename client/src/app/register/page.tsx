@@ -87,10 +87,6 @@ export default function Register() {
                 })
             }
         }
-        console.log(userName);
-        console.log(email);
-        console.log(password);
-        console.log(confirmPassword);
     }
     return (
         <div className="w-full px-3 h-[90vh] flex justify-center items-center">

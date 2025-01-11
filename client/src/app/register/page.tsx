@@ -47,8 +47,17 @@ export default function Register() {
                     onClick: () => console.log("Go to Home"),
                 },
             })
-        } catch (error) {
-            console.log(error);
+        } catch (error:any) {
+            const errorMessage = error.response?.data?.message;
+            if (errorMessage === "Password does not meet the required criteria!") {
+                return toast("Use a stronger password!", {
+                    description: `Your password must be at least 8 characters long and include at least one letter, one number, and one special character (e.g., @$!%*?&).`,
+                    action: {
+                        label: "Ok!",
+                        onClick: () => console.log("Go to Home"),
+                    },
+                })
+            }
         }
         console.log(userName);
         console.log(email);

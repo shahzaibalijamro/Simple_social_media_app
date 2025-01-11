@@ -23,7 +23,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [textInput, setTextInput] = useState("");
   const [posts, setPosts] = useState([]);
-  const [loadingVal,setLoadingVal] = useState(33)
+  const [loadingVal,setLoadingVal] = useState(33);
   const mediaRef = useRef<HTMLInputElement | null>(null);
   const getAllPosts = async () => {
     setLoadingVal(80);

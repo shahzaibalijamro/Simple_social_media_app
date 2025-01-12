@@ -20,7 +20,7 @@ export default function Login() {
     const loginUser = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
-            const { data } = await axios.post("/login", {
+            const { data } = await axios.post("/api/v1/login", {
                 userNameOrEmail,
                 password
             })

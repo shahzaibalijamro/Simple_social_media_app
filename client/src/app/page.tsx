@@ -29,7 +29,7 @@ const Home = () => {
   const getAllPosts = async () => {
     setLoadingVal(80);
     try {
-      const { data } = await axios.get("/posts");
+      const { data } = await axios.get("/api/v1/posts");
       setLoadingVal(90);
       console.log(data);
       setPosts(data)

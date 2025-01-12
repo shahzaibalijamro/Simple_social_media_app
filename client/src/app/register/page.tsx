@@ -12,7 +12,7 @@ const page = () => {
     const accessToken = useSelector((state: tokenState) => state.token.accessToken);
     const authenticateUserState = async () =>{
         try {
-            const {data} = await axios.post("/protected");
+            const {data} = await axios.post("/api/v1/protected");
             console.log(data);
         } catch (error) {
             console.log(error);

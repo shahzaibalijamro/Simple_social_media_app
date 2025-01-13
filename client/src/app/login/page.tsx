@@ -26,7 +26,7 @@ const login = () => {
         } catch (error: any) {
             console.log(error);
             const errorMsg = error.response?.data.message;
-            if (errorMsg === "Access token and refresh token are required! Please log in again.") {
+            if (errorMsg === "Refresh token is required! Please log in again.") {
                 setLoading(true)
             }
         }

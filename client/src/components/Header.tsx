@@ -1,11 +1,14 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from './ui/button'
-import { Avatar, AvatarFallback} from './ui/avatar'
+import { Avatar, AvatarFallback } from './ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from './ui/dropdown-menu'
 import Link from 'next/link'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from "@/config/axiosConfig"
+import { setAccessToken } from '@/config/redux/reducers/tokenSlice'
+import { setUser } from '@/config/redux/reducers/userSlice'
 
 interface tokenState {
     token: {
@@ -22,10 +25,26 @@ interface userState {
 }
 
 const Header = () => {
+    const dispatch = useDispatch();
     const accessToken = useSelector((state: tokenState) => state.token.accessToken);
-    console.log(accessToken);
+    console.log(accessToken,"accessToken Before");
     const user = useSelector((state: userState) => state.user.user);
     console.log(user);
+    const getTokens = async () => {
+        try {
+            const { data } = await axios.post("/api/v1/auth");
+            console.log(data);
+            dispatch(setAccessToken({ token: data.accessToken }));
+            dispatch(setUser({ user: data.user }));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    useEffect(() => {
+        if (!accessToken) {
+            getTokens();
+        }
+    }, [])
     return (
         <div className='w-full bg-[#1e40af] flex justify-between px-2 py-2 sm:px-2 sm:py-3 md:px-3 md:py-3 items-center lg:py-3 lg:px-4 xl:px-5 xl:py-3'>
             <h1 className='text-xl text-white font-normal'>Social App</h1>

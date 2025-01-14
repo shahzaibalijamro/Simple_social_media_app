@@ -48,7 +48,7 @@ const Card = ({ username, image, likes, comments, time, text }: Card) => {
     }
     return (
         <div className='max-w-[640px] mb-4 bg-white rounded-[8px] border border-gray-300 p-3 mx-4 sm:mx-auto'>
-            <div className='flex gap-x-3 justify-start items-center'>
+            <div className='flex gap-x-3 mb-3 justify-start items-center'>
                 <div>
                     <Avatar className='w-9 h-9'>
                         <AvatarFallback>{username[0] + username[1]}</AvatarFallback>
@@ -59,10 +59,10 @@ const Card = ({ username, image, likes, comments, time, text }: Card) => {
                     <div><h1 className='text-sm text-gray-600 font-medium'>{calculateDays(diffInHours)} ago</h1></div>
                 </div>
             </div>
-            {text && <div className='text-start mt-3 px-1 text-gray-600'>
+            {text && <div className='text-start mb-2 px-1 text-gray-600'>
                 <h1 className='text-[15px]'>{text}</h1>
             </div>}
-            {image && <div className='w-full bg-gray-200 rounded-xl flex justify-center items-center mt-3 mb-2'>
+            {image && <div className='w-full bg-gray-200 rounded-xl flex justify-center items-center mb-2'>
                 <img src={image} alt="" />
             </div>}
             <div className='flex justify-between mb-2 items-center'>

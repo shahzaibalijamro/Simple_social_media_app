@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Avatar, AvatarFallback } from './ui/avatar'
 import { Button } from './ui/button';
 import Like from "@/assets/like.png"
 import Comment from "@/assets/chat.png"
 import Image from 'next/image';
 import BlueLike from "@/assets/like (1).png";
+import { ScrollArea } from './ui/scroll-area';
+import { Input } from './ui/input';
 interface Card {
     item: {
         userId: {
@@ -19,15 +21,16 @@ interface Card {
         comments: any[];
         __v: number;
     }
-    likePost: (id:string,index:number) => void,
-    commentOnPost: (id:string,index:number) => void,
+    likePost: (id: string, index: number) => void,
+    commentOnPost: (id: string, index: number) => void,
     index: number
 }
 
-const Card = ({ item,index, likePost, commentOnPost }: Card) => {
+const Card = ({ item, index, likePost, commentOnPost }: Card) => {
     const createdDate = new Date(item.createdAt);
     const now = Date.now();
     const diffInMs = now - createdDate.getTime();
+    const [showModal,setShowModal] = useState(false)
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     const calculateDays = (diffInHours: number) => {
         const calc = diffInHours / 24;
@@ -87,15 +90,41 @@ const Card = ({ item,index, likePost, commentOnPost }: Card) => {
                 </div>
             </div>
             <div className='flex justify-center w-full gap-x-2 items-center'>
-                <Button onClick={() => likePost(item._id,index)} className='bg-gray-200 hover:bg-gray-300 flex justify-center items-center flex-1  font-medium text-base text-[#1e40af]'>
+                <Button onClick={() => likePost(item._id, index)} className='bg-gray-200 hover:bg-gray-300 flex justify-center items-center flex-1  font-medium text-base text-[#1e40af]'>
                     <Image src={Like} width={20} alt='like' />
                     Like
                 </Button>
-                <Button onClick={() => commentOnPost(item._id,index)} className='bg-gray-200 hover:bg-gray-300 flex justify-center items-center flex-1  font-medium text-base text-[#1e40af]'>
+                <Button onClick={() => setShowModal(!showModal)} className='bg-gray-200 hover:bg-gray-300 flex justify-center items-center flex-1  font-medium text-base text-[#1e40af]'>
                     <Image src={Comment} width={20} alt='like' />
                     Comment
                 </Button>
             </div>
+            {showModal && <div>
+                <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                    Jokester began sneaking into the castle in the middle of the night and leaving
+                    jokes all over the place: under the king's pillow, in his soup, even in the
+                    royal toilet. The king was furious, but he couldn't seem to stop Jokester. And
+                    then, one day, the people of the kingdom discovered that the jokes left by
+                    Jokester were so funny that they couldn't help but laugh. And once they
+                    started laughing, they couldn't stop.
+                    Jokester began sneaking into the castle in the middle of the night and leaving
+                    jokes all over the place: under the king's pillow, in his soup, even in the
+                    royal toilet. The king was furious, but he couldn't seem to stop Jokester. And
+                    then, one day, the people of the kingdom discovered that the jokes left by
+                    Jokester were so funny that they couldn't help but laugh. And once they
+                    started laughing, they couldn't stop.
+                    Jokester began sneaking into the castle in the middle of the night and leaving
+                    jokes all over the place: under the king's pillow, in his soup, even in the
+                    royal toilet. The king was furious, but he couldn't seem to stop Jokester. And
+                    then, one day, the people of the kingdom discovered that the jokes left by
+                    Jokester were so funny that they couldn't help but laugh. And once they
+                    started laughing, they couldn't stop.
+                </ScrollArea>
+                <div className='flex mt-2 gap-x-1 items-center'>
+                <Input onChange={(e) => console.log(e.target.value)} className='bg-white h-11 border rounded-[15px] border-gray-300' type='text' placeholder="Add comment" />
+                <Button onClick={() => console.log(123)} className='bg-[#1e40af] hover:bg-[#3b5ecf] rounded-[15px] text-white'>Comment</Button>
+                </div>
+            </div>}
         </div>
     )
 }

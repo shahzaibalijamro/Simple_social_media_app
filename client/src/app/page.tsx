@@ -109,7 +109,7 @@ const Home = () => {
       post.userId = {
         userName: user.userName,
       }
-      setPosts([...posts, post]);
+      setPosts([post,...posts]);
     } catch (error) {
       console.log(error);
       toast("Something went wrong!", {
@@ -176,7 +176,30 @@ const Home = () => {
         },
       })
     }
-    console.log(id, "Comment",commentText);
+    if (!accessToken) {
+      return toast("Unauthorized!", {
+        description: `You need to log in to like a post. Please log in and try again.`,
+        action: {
+          label: "Login",
+          onClick: () => router.push("/login"),
+        },
+      })
+    }
+    try {
+      const {data} = await axios.post(`/api/v1/post/comment/${id}`,{
+        text: commentText
+      },{
+        headers: {
+          'Authorization' : `Bearer ${accessToken}`
+        }
+      })
+      console.log(data);
+      posts[index].comments.push({text:commentText,userId:{userName:user.userName}})
+      setPosts([...posts]);
+      setCommentText("");
+    } catch (error) {
+      console.log(error);
+    }
   }
   const goToNextPage = async () => {
     getAllPosts(currentPage+1);

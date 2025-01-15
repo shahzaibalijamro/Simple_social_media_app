@@ -7,6 +7,7 @@ import Image from 'next/image';
 import BlueLike from "@/assets/like (1).png";
 import { ScrollArea } from './ui/scroll-area';
 import { Input } from './ui/input';
+import { Separator } from './ui/separator';
 interface Card {
     item: {
         userId: {
@@ -103,18 +104,20 @@ const Card = ({ item, index, likePost, commentOnPost,setCommentText }: Card) => 
             {showModal && <div>
                 {item.comments.length > 0 && <ScrollArea className="h-[200px] mt-2 w-full rounded-md border p-4">
                     {item.comments.map((item) => {
-                        return <div className='mb-2'>
+                        return <div className=''>
                         <div className='flex gap-x-3 justify-start items-center'>
                             <div>
-                                <Avatar className='w-9 h-9'>
+                                <Avatar className='w-8 h-8'>
                                     <AvatarFallback>{item.userId.userName[0] + item.userId.userName[1]}</AvatarFallback>
                                 </Avatar>
                             </div>
                             <div>
-                                <div><h1 className='font-medium'>{item.userId.userName}</h1></div>
-                                <div><h1 className='text-sm text-gray-600 font-medium'>{item.text}</h1></div>
+                                <div><h1 className='font-normal text-sm'>{item.userId.userName}</h1></div>
+                                <div><h1 className='text-[15px] text-gray-600 font-medium'>{item.text}</h1></div>
                             </div>
                         </div>
+                        <h1 className='text-gray-600 text-[12px] ms-[2px] mt-[2px]'>Just now!</h1>
+                        <Separator className='my-[5px]'/>
                     </div>
                     })}
                 </ScrollArea>}

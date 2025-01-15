@@ -23,10 +23,11 @@ interface Card {
     }
     likePost: (id: string, index: number) => void,
     commentOnPost: (id: string, index: number) => void,
+    setCommentText: (value: string) => void,
     index: number
 }
 
-const Card = ({ item, index, likePost, commentOnPost }: Card) => {
+const Card = ({ item, index, likePost, commentOnPost,setCommentText }: Card) => {
     const createdDate = new Date(item.createdAt);
     const now = Date.now();
     const diffInMs = now - createdDate.getTime();
@@ -100,8 +101,9 @@ const Card = ({ item, index, likePost, commentOnPost }: Card) => {
                 </Button>
             </div>
             {showModal && <div>
-                <ScrollArea className="h-[200px] mt-2 w-full rounded-md border p-4">
-                    <div className='mb-2'>
+                {item.comments.length > 0 && <ScrollArea className="h-[200px] mt-2 w-full rounded-md border p-4">
+                    {item.comments.map((item) => {
+                        return <div className='mb-2'>
                         <div className='flex gap-x-3 justify-start items-center'>
                             <div>
                                 <Avatar className='w-9 h-9'>
@@ -110,66 +112,15 @@ const Card = ({ item, index, likePost, commentOnPost }: Card) => {
                             </div>
                             <div>
                                 <div><h1 className='font-medium'>{item.userId.userName}</h1></div>
-                                <div><h1 className='text-sm text-gray-600 font-medium'>This is a comment!</h1></div>
+                                <div><h1 className='text-sm text-gray-600 font-medium'>{item.text}</h1></div>
                             </div>
                         </div>
                     </div>
-                    <div className='mb-2'>
-                        <div className='flex gap-x-3 justify-start items-center'>
-                            <div>
-                                <Avatar className='w-9 h-9'>
-                                    <AvatarFallback>{item.userId.userName[0] + item.userId.userName[1]}</AvatarFallback>
-                                </Avatar>
-                            </div>
-                            <div>
-                                <div><h1 className='font-medium'>{item.userId.userName}</h1></div>
-                                <div><h1 className='text-sm text-gray-600 font-medium'>This is a comment!</h1></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='mb-2'>
-                        <div className='flex gap-x-3 justify-start items-center'>
-                            <div>
-                                <Avatar className='w-9 h-9'>
-                                    <AvatarFallback>{item.userId.userName[0] + item.userId.userName[1]}</AvatarFallback>
-                                </Avatar>
-                            </div>
-                            <div>
-                                <div><h1 className='font-medium'>{item.userId.userName}</h1></div>
-                                <div><h1 className='text-sm text-gray-600 font-medium'>This is a comment!</h1></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='mb-2'>
-                        <div className='flex gap-x-3 justify-start items-center'>
-                            <div>
-                                <Avatar className='w-9 h-9'>
-                                    <AvatarFallback>{item.userId.userName[0] + item.userId.userName[1]}</AvatarFallback>
-                                </Avatar>
-                            </div>
-                            <div>
-                                <div><h1 className='font-medium'>{item.userId.userName}</h1></div>
-                                <div><h1 className='text-sm text-gray-600 font-medium'>This is a comment!</h1></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='mb-2'>
-                        <div className='flex gap-x-3 justify-start items-center'>
-                            <div>
-                                <Avatar className='w-9 h-9'>
-                                    <AvatarFallback>{item.userId.userName[0] + item.userId.userName[1]}</AvatarFallback>
-                                </Avatar>
-                            </div>
-                            <div>
-                                <div><h1 className='font-medium'>{item.userId.userName}</h1></div>
-                                <div><h1 className='text-sm text-gray-600 font-medium'>This is a comment!</h1></div>
-                            </div>
-                        </div>
-                    </div>
-                </ScrollArea>
+                    })}
+                </ScrollArea>}
                 <div className='flex mt-2 gap-x-1 items-center'>
-                    <Input onChange={(e) => console.log(e.target.value)} className='bg-white h-11 border rounded-[15px] border-gray-300' type='text' placeholder="Add comment" />
-                    <Button onClick={() => console.log(123)} className='bg-[#1e40af] hover:bg-[#3b5ecf] rounded-[15px] text-white'>Comment</Button>
+                    <Input onChange={(e) => setCommentText(e.target.value)} className='bg-white h-11 focus-visible:outline-gray-400 focus-visible:outline-1 border focus:border-gray-300 rounded-[15px] border-gray-300' type='text' placeholder="Add comment" />
+                    <Button onClick={() => commentOnPost(item._id,index)} className='bg-[#1e40af] hover:bg-[#3b5ecf] rounded-[15px] text-white'>Comment</Button>
                 </div>
             </div>}
         </div>

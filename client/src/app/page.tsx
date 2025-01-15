@@ -8,6 +8,7 @@ import Head from 'next/head';
 import { toast, Toaster } from 'sonner';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 interface tokenState {
   token: {
@@ -31,9 +32,9 @@ interface singlePost {
 
 interface userState {
   user: {
-      user: {
-          userName: string
-      },
+    user: {
+      userName: string
+    },
   }
 }
 
@@ -41,15 +42,23 @@ const Home = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(true);
   const [textInput, setTextInput] = useState("");
+  const [commentText, setCommentText] = useState("");
   const [posts, setPosts] = useState<singlePost[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const user = useSelector((state: userState) => state.user.user);
   const [loadingVal, setLoadingVal] = useState(33);
   const accessToken = useSelector((state: tokenState) => state.token.accessToken);
   const mediaRef = useRef<HTMLInputElement | null>(null);
-  const getAllPosts = async () => {
+  const getAllPosts = async (page = 1) => {
+    setPosts([]);
+    setLoading(true)
     setLoadingVal(80);
     try {
-      const { data } = await axios.get("/api/v1/posts");
+      const { data } = await axios.get("/api/v1/posts", {
+        params: {
+          page
+        },
+      });
       setLoadingVal(90);
       console.log(data);
       setPosts(data)
@@ -112,7 +121,7 @@ const Home = () => {
       })
     }
   }
-  const likePost = async (id:string,index:number) => {
+  const likePost = async (id: string, index: number) => {
     console.log(id)
     if (!accessToken) {
       return toast("Unauthorized!", {
@@ -124,32 +133,32 @@ const Home = () => {
       })
     }
     try {
-      const {data} = await axios.post(`/api/v1/post/${id}`,{},{
+      const { data } = await axios.post(`/api/v1/post/${id}`, {}, {
         headers: {
-          'Authorization' : `Bearer ${accessToken}`
+          'Authorization': `Bearer ${accessToken}`
         }
       })
       console.log(data);
       const confirmationMessage = data.message;
       if (confirmationMessage === "Post Unliked") {
-        const {unLike} = data;
+        const { unLike } = data;
         posts[index].likes = unLike.likes;
         setPosts([...posts]);
         return toast("Post Unliked!", {
           action: {
             label: "Undo",
-            onClick: () => likePost(id,index),
+            onClick: () => likePost(id, index),
           },
         });
       }
       if (confirmationMessage === "Post liked") {
-        const {like} = data;
+        const { like } = data;
         posts[index].likes = like.likes;
         setPosts([...posts]);
         return toast("Post liked!", {
           action: {
             label: "Undo",
-            onClick: () => likePost(id,index),
+            onClick: () => likePost(id, index),
           },
         });
       }
@@ -157,8 +166,38 @@ const Home = () => {
       console.log(error);
     }
   }
-  const commentOnPost = async (id:string) => {
-    console.log(id,"Comment")
+  const commentOnPost = async (id: string, index: number) => {
+    if (!(commentText || commentText.trim() !== "")) {
+      return toast("Empty Comment!", {
+        description: `Cannot add an empty comment.`,
+        action: {
+          label: "Ok",
+          onClick: () => null,
+        },
+      })
+    }
+    console.log(id, "Comment",commentText);
+  }
+  const goToNextPage = async () => {
+    getAllPosts(currentPage+1);
+    setCurrentPage(currentPage+1)
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+  }
+  const goToPreviousPage = async () => {
+    if (currentPage === 1) {
+      return null
+    }
+    getAllPosts(currentPage-1);
+    setCurrentPage(currentPage-1);
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
   }
   return (
     <>
@@ -170,9 +209,30 @@ const Home = () => {
       <InputForm setTextInput={setTextInput} mediaRef={mediaRef} addPost={addPost} />
       <div className='h-6 w-full'></div>
       <div>
-        {posts.length > 0 && !loading ? posts.map((item: singlePost,index:number) => {
-          return <Card key={item._id} likePost={likePost} commentOnPost={commentOnPost} index={index} item={item} />
+        {posts.length > 0 && !loading ? posts.map((item: singlePost, index: number) => {
+          return <Card key={item._id} likePost={likePost} setCommentText={setCommentText} commentOnPost={commentOnPost} index={index} item={item} />
         }) : posts.length === 0 && !loading ? <div className='w-full justify-center items-center mt-4 flex'><h1>No posts found!</h1></div> : posts.length === 0 && loading ? <div className='max-w-[200px] mx-auto px-4 justify-center items-center mt-4 flex'><Progress value={loadingVal} /></div> : <></>}
+      </div>
+      <div className='h-4 w-full'></div>
+      <div>
+        {!loading && <Pagination>
+          <PaginationContent>
+            <PaginationItem className='cursor-pointer' onClick={goToPreviousPage}>
+              <PaginationPrevious/>
+            </PaginationItem>
+            <PaginationItem className='cursor-pointer'>
+              <PaginationLink isActive>
+                {currentPage}
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+            <PaginationItem className='cursor-pointer' onClick={goToNextPage}>
+              <PaginationNext/>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>}
       </div>
       <div className='h-6 w-full'></div>
     </>

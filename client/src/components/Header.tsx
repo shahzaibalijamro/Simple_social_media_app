@@ -21,7 +21,8 @@ interface tokenState {
 interface userState {
     user: {
         user: {
-            userName: string
+            userName: string,
+            _id: string
         },
     }
 }
@@ -81,7 +82,9 @@ const Header = () => {
                         <AvatarFallback className='font-medium text-xl'>{user.userName[0]}</AvatarFallback>
                     </Avatar></DropdownMenuTrigger>
                     <DropdownMenuContent className='z-50'>
+                        <Link href={`/user/${user._id}`}>
                         <DropdownMenuLabel className='cursor-pointer'>My Profile</DropdownMenuLabel>
+                        </Link>
                         <DropdownMenuItem className='cursor-pointer'>My posts</DropdownMenuItem>
                         <DropdownMenuItem onClick={logOutUser} className='cursor-pointer'>Logout</DropdownMenuItem>
                     </DropdownMenuContent>

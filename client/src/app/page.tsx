@@ -61,6 +61,9 @@ const Home = () => {
       });
       setLoadingVal(90);
       console.log(data);
+      if (data?.message === "You're all caught up!") {
+        return setPosts([])
+      }
       setPosts(data)
     } catch (error) {
       console.log(error);
@@ -234,9 +237,9 @@ const Home = () => {
       <div>
         {posts.length > 0 && !loading ? posts.map((item: singlePost, index: number) => {
           return <Card key={item._id} likePost={likePost} setCommentText={setCommentText} commentOnPost={commentOnPost} index={index} item={item} />
-        }) : posts.length === 0 && !loading ? <div className='w-full justify-center items-center mt-4 flex'><h1>No posts found!</h1></div> : posts.length === 0 && loading ? <div className='max-w-[200px] mx-auto px-4 justify-center items-center mt-4 flex'><Progress value={loadingVal} /></div> : <></>}
+        }) : posts.length === 0 && !loading ? <div className='w-full justify-center items-center my-4 flex'><h1>No posts found!</h1></div> : posts.length === 0 && loading ? <div className='max-w-[200px] mx-auto px-4 justify-center items-center mt-4 flex'><Progress value={loadingVal} /></div> : <></>}
       </div>
-      <div className='h-4 w-full'></div>
+      <div className='h-3 w-full'></div>
       <div>
         {!loading && <Pagination>
           <PaginationContent>

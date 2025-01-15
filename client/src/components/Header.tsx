@@ -82,7 +82,7 @@ const Header = () => {
                         <AvatarFallback className='font-medium text-xl'>{user.userName[0]}</AvatarFallback>
                     </Avatar></DropdownMenuTrigger>
                     <DropdownMenuContent className='z-50'>
-                        <Link href={`/user/${user._id}`}>
+                        <Link href={`/user/${user.userName}`}>
                         <DropdownMenuLabel className='cursor-pointer'>My Profile</DropdownMenuLabel>
                         </Link>
                         <DropdownMenuItem className='cursor-pointer'>My posts</DropdownMenuItem>

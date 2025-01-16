@@ -1,6 +1,5 @@
 "use client";
 
-
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -23,7 +22,6 @@ interface userState {
         },
     }
 }
-
 interface singlePost {
     userId: {
         userName: string;
@@ -37,13 +35,11 @@ interface singlePost {
     comments: any[];
     __v: number;
 }
-
 interface tokenState {
     token: {
         accessToken: string,
     }
 }
-
 interface User {
     userName: string,
     _id: string,
@@ -52,22 +48,21 @@ interface User {
 }
 
 const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
+    const accessToken = useSelector((state: tokenState) => state.token.accessToken);
+    const user = useSelector((state: userState) => state.user.user);
     const [id, setId] = useState<string>("");
     const [loading, setLoading] = useState(true);
-    const router = useRouter();
-    const removeUserAndRedirect = useRemoveUser();
     const [commentText, setCommentText] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [loadingVal, setLoadingVal] = useState(33);
-    const accessToken = useSelector((state: tokenState) => state.token.accessToken);
     const [posts, setPosts] = useState<singlePost[]>([]);
     const [doesUserExist, setDoesUserExist] = useState(true);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
-    const user = useSelector((state: userState) => state.user.user);
+    const removeUserAndRedirect = useRemoveUser();
+    const router = useRouter();
     useEffect(() => {
         (async () => {
             const resolvedParams = await params;
-            console.log(resolvedParams.id);
             setId(resolvedParams.id);
             if (!accessToken) {
                 return authenticateUserState();
@@ -75,7 +70,7 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
             if (accessToken) {
                 fetchPosts(resolvedParams.id);
             }
-        })()
+        })();
     }, [params, accessToken]);
     const authenticateUserState = async () => {
         setLoadingVal(90);
@@ -90,6 +85,7 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
         }
     }
     const fetchPosts = async (userName: string, page = 1) => {
+        setPosts([]);
         try {
             const { data } = await axios(`/api/v1/posts/user`, {
                 headers: {
@@ -100,12 +96,11 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                     userName
                 },
             });
-            console.log(data, "==>>>>>>");
             if (data?.message === "You're all caught up!") {
                 setCurrentUser(data.user);
                 setPosts([]);
                 return
-            }
+            };
             const correctPosts = data.posts.map((item: singlePost) => {
                 item.userId = {
                     userName: data.userName,
@@ -157,7 +152,6 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
         return `${diffInHours} hrs`
     }
     const likePost = async (id: string, index: number) => {
-        console.log(id)
         if (!accessToken) {
             return toast("Unauthorized!", {
                 description: `You need to log in to like a post. Please log in and try again.`,

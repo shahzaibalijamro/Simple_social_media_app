@@ -1,4 +1,5 @@
 "use client";
+
 import Card from '@/components/Card';
 import InputForm from '@/components/InputForm'
 import React, { useEffect, useRef, useState } from 'react'
@@ -15,7 +16,6 @@ interface tokenState {
     accessToken: string,
   }
 }
-
 interface singlePost {
   userId: {
     userName: string;
@@ -29,7 +29,6 @@ interface singlePost {
   comments: any[];
   __v: number;
 }
-
 interface userState {
   user: {
     user: {
@@ -39,15 +38,15 @@ interface userState {
 }
 
 const Home = () => {
-  const router = useRouter()
+  const accessToken = useSelector((state: tokenState) => state.token.accessToken);
+  const user = useSelector((state: userState) => state.user.user);
   const [loading, setLoading] = useState(true);
   const [textInput, setTextInput] = useState("");
   const [commentText, setCommentText] = useState("");
   const [posts, setPosts] = useState<singlePost[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const user = useSelector((state: userState) => state.user.user);
   const [loadingVal, setLoadingVal] = useState(33);
-  const accessToken = useSelector((state: tokenState) => state.token.accessToken);
+  const router = useRouter()
   const mediaRef = useRef<HTMLInputElement | null>(null);
   const getAllPosts = async (page = 1) => {
     setPosts([]);

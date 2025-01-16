@@ -13,10 +13,10 @@ interface tokenState {
 }
 
 const login = () => {
+    const accessToken = useSelector((state: tokenState) => state.token.accessToken);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [loadingVal, setLoadingVal] = useState(33);
-    const accessToken = useSelector((state: tokenState) => state.token.accessToken);
     const authenticateUserState = async () => {
         setLoadingVal(90);
         try {
@@ -33,8 +33,7 @@ const login = () => {
     }
     useEffect(() => {
         authenticateUserState();
-    }, [])
-    console.log(accessToken);
+    }, []);
     return (
         <div>
             {loading ? <Login /> : <div className='w-full h-[90vh] flex justify-center items-center max-w-[200px] mx-auto px-4'><Progress value={loadingVal} /></div>}

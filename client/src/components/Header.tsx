@@ -52,7 +52,7 @@ const Header = () => {
             getTokens();
         }
     }, [])
-    const logOutUser: () => Promise<string | number | null> = async () => {
+    const logOutUser = async () => {
         try {
             const { data } = await axios.post("/api/v1/logout");
             removeUserAndRedirect();

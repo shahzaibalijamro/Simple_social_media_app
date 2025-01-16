@@ -14,6 +14,7 @@ import Link from 'next/link';
 import Card from '@/components/Card';
 import { toast, Toaster } from 'sonner';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import useRemoveUser from '@/hooks/removeUser';
 
 interface userState {
     user: {
@@ -54,6 +55,7 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
     const [id, setId] = useState<string>("");
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const removeUserAndRedirect = useRemoveUser();
     const [commentText, setCommentText] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [loadingVal, setLoadingVal] = useState(33);
@@ -257,6 +259,48 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
             behavior: 'smooth',
         });
     }
+    const logOutUser = async () => {
+        try {
+            const { data } = await axios.post("/api/v1/logout");
+            removeUserAndRedirect();
+        } catch (error: any) {
+            console.log(error);
+            if (error.response?.status === 500) {
+                return toast("Something went wrong!", {
+                    description: `Please try again later!`,
+                    action: {
+                        label: "Retry",
+                        onClick: () => logOutUser(),
+                    },
+                })
+            }
+            removeUserAndRedirect()
+        }
+        return null;
+    }
+    const deleteUser = async () => {
+        try {
+            const {data} = await axios.delete("/api/v1/delete",{
+                headers: {
+                    'Authorization' : `Bearer ${accessToken}`
+                }
+            })
+            removeUserAndRedirect();
+        } catch (error:any) {
+            console.log(error);
+            const errorMsg = error.response?.data?.message;
+            if (errorMsg === "Error occurred while deleting the user") {
+                return toast("Could not delete User!", {
+                    description: `Please try again later!`,
+                    action: {
+                        label: "Retry",
+                        onClick: () => deleteUser(),
+                    },
+                })
+            }
+            removeUserAndRedirect();
+        }
+    }
     return (
         <>
             <Toaster />
@@ -302,12 +346,12 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction>Continue</AlertDialogAction>
+                                <AlertDialogCancel className='bg-[#1e40af] text-white hover:text-white hover:bg-[#1e40afcc]'>Cancel</AlertDialogCancel>
+                                <AlertDialogAction className='bg-[#e40000] hover:bg-[#e4000096]' onClick={deleteUser}>Continue</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
-                    <Button className='bg-[#1e40af] hover:bg-[#1e40afcc] mt-4'>Logout</Button>
+                    <Button onClick={logOutUser} className='bg-[#1e40af] hover:bg-[#1e40afcc] mt-4'>Logout</Button>
                 </div>}
                 <div className='mt-10 text-center'>
                     <h1 className='text-[22px] font-medium'>My Posts</h1>

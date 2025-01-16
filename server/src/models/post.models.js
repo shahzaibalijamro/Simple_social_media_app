@@ -12,10 +12,7 @@ const postSchema = new mongoose.Schema({
         ref: "User",
         required: [true, "Author Id is required!"]
     },
-    likes: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Like"
-    }],
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment"

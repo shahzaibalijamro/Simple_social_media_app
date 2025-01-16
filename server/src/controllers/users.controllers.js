@@ -1,35 +1,36 @@
 import mongoose from "mongoose";
 import User from "../models/user.models.js";
+import Post from "../models/post.models.js"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
-import { uploadImageToCloudinary } from "../utils/cloudinary.utils.js";
 import { generateAccessandRefreshTokens } from "../utils/token.utils.js";
 
 // registers User
 const registerUser = async (req, res) => {
-    const { userName, fullName, email, password } = req.body;
-    if (!req.file) return res.status(400).json({
-        message: "No file found"
-    })
-    const image = req.file.path;
+    const { userName,email, password } = req.body;
     try {
-        const profilePicture = await uploadImageToCloudinary(image);
-        const user = await User.create({ userName, email, password, profilePicture });
+        const user = await User.create({ userName, email, password });
         const { accessToken, refreshToken } = generateAccessandRefreshTokens(user);
         res
-            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
+            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 24 * 60 * 60 * 1000 })
             .status(201).json({
                 message: "New user created",
                 user,
                 accessToken
             })
     } catch (error) {
-        console.log(error);
+        console.log(error.message);
         if (error.message === "Password does not meet the required criteria") {
             return res.status(400).json({ message: "Password does not meet the required criteria!" });
         }
         if (error.code === 11000) {
             return res.status(400).json({ message: "userName or email already exists." });
+        }
+        if (error.message === "Username must be unique!") {
+            return res.status(400).json({ message: "This username is already taken." });
+        }
+        if (error.message === "Email must be unique!") {
+            return res.status(400).json({ message: "This email is already taken." });
         }
         if (error.name === 'ValidationError') {
             return res.status(400).json({ message: error.message });
@@ -37,7 +38,6 @@ const registerUser = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 }
-
 
 const loginUser = async function (req, res) {
     const { userNameOrEmail, password } = req.body;
@@ -57,12 +57,13 @@ const loginUser = async function (req, res) {
         })
         const { accessToken, refreshToken } = generateAccessandRefreshTokens(user)
         res
-            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
+            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 24 * 60 * 60 * 1000 })
             .status(200)
             .json({
                 message: "User successfully logged in!",
                 user,
-                accessToken
+                accessToken,
+                refreshToken
             })
     } catch (error) {
         console.log(error);
@@ -80,6 +81,7 @@ const deleteUser = async (req, res) => {
         const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
         session = await mongoose.startSession();
         session.startTransaction();
+        const deleteUserPosts = await Post.deleteMany({userId:{_id:decodedToken._id}},{session});
         const deleteUser = await User.findByIdAndDelete(decodedToken._id, { session });
         if (!deleteUser) {
             await session.abortTransaction();
@@ -90,8 +92,8 @@ const deleteUser = async (req, res) => {
         await session.commitTransaction();
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: true,
-            sameSite: 'None',
+            secure: false,
+            sameSite: 'lax',
             maxAge: 0,
             path: '/',
         });

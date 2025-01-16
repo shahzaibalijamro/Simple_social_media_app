@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/users.models.js"
+import User from "../models/user.models.js"
 import { generateAccessandRefreshTokens } from "../utils/token.utils.js";
 
 //generates access token on app start
@@ -23,17 +23,10 @@ const isUserLoggedIn = async (req, res) => {
         const { accessToken, refreshToken } = generateAccessandRefreshTokens(user);
         res
             //Adding cookies
-            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, maxAge: 24 * 60 * 60 * 1000, // 1 day
-                sameSite: 'Strict' })
+            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, maxAge: 24 * 60 * 60 * 1000, sameSite: 'lax' })
             .json({
-                token: accessToken,
-                user: {
-                    _id: user._id,
-                    email: user.email,
-                    fullName: user.fullName,
-                    userName: user.userName,
-                    profilePicture: user.profilePicture
-                }
+                accessToken,
+                user
             })
     } catch (error) {
         console.error(error.stack || error.message || error);
@@ -55,17 +48,23 @@ const isUserLoggedIn = async (req, res) => {
 
 //authenticates user when accessing secure routes
 const authenticateUser = async (req, res) => {
-    const accessToken = req.headers["authorization"]?.split(" ")[1];
     const { refreshToken } = req.cookies;
-    if (!accessToken || !refreshToken) {
+    console.log(refreshToken);
+    if (!refreshToken) {
         return res.status(401).json({
-            message: "Access token and refresh token are required! Please log in again."
+            message: "Refresh token is required! Please log in again."
         });
     }
     try {
-        const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const user = await User.findById(decoded._id);
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found!"
+            })
+        }
         return res.status(200).json({
-            decoded,
+            user,
             isValid: true
         })
     } catch (error) {
@@ -76,38 +75,18 @@ const authenticateUser = async (req, res) => {
             })
         }
         if (error.message === "jwt expired") {
-            try {
-                const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET)
-                //check if the user exists in DB
-                const user = await User.findById(decoded._id);
-                if (!user) {
-                    return res.status(404).json({
-                        message: "User not found!"
-                    })
-                }
-                //generate new tokens if user found
-                const { accessToken, refreshToken } = generateAccessandRefreshTokens(user);
-                res
-                    //Adding cookies
-                    .cookie("refreshToken", refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'development', maxAge: 24 * 60 * 60 * 1000, // 1 day
-                        sameSite: 'Strict' })
-                    .json({
-                        token: accessToken,
-                        user: {
-                            _id: user._id,
-                            email: user.email,
-                            fullName: user.fullName,
-                            userName: user.userName,
-                            profilePicture: user.profilePicture
-                        },
-                        isValid: true
-                    })
-            } catch (error) {
-                return res.status(400).json({
-                    message: "Refresh token not found or is invalid!"
-                })
-            }
+            return res.status(400).json({
+                message: "Refresh token is expired, Please login again!"
+            })
         }
+        if (error.message === "jwt must be provided") {
+            return res.status(400).json({
+                message: "Refresh token not found or is invalid!"
+            })
+        }
+        return res.status(500).json({
+            message: "Something went wrong!"
+        })
     }
 }
 
@@ -120,7 +99,7 @@ const logoutUser = async (req, res) => {
         if (!checkToken) return res.status(401).json({
             message: "Invalid or expired token!"
         })
-        res.clearCookie("refreshToken", { httpOnly: true, secure: process.env.NODE_ENV === 'development', maxAge: 0, sameSite: 'strict', });
+        res.clearCookie("refreshToken", { httpOnly: true, secure: false, maxAge: 0, sameSite: 'lax', });
         res.status(200).json({
             message: "User logged out successfully"
         })
@@ -130,4 +109,4 @@ const logoutUser = async (req, res) => {
     }
 }
 
-export { isUserLoggedIn,authenticateUser,logoutUser }
+export { isUserLoggedIn, authenticateUser, logoutUser }

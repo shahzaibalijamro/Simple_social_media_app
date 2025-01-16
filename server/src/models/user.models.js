@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Email is required!'],
-        unique: true,
+        unique: [true, 'Email must be unique!'],
         lowercase: true,
         validate: {
             validator: function (value) {
@@ -22,10 +22,6 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'Password is required!']
-    },
-    profilePicture: {
-        type: String,
-        required: [true, "Profile picture is required!"]
     },
     posts: [{
         type: mongoose.Schema.Types.ObjectId,

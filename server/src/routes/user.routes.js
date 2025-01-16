@@ -5,7 +5,7 @@ import { verifyRequest } from "../middlewares/auth.middlewares.js";
 const userRouter = express.Router();
 
 //register User
-userRouter.post("/register", upload.single("image"), registerUser)
+userRouter.post("/register", registerUser)
 
 //login User
 userRouter.post("/login", loginUser)

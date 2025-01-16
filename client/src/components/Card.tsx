@@ -39,11 +39,11 @@ interface userState {
 }
 
 const Card = ({ item, index, likePost, commentOnPost, setCommentText }: Card) => {
+    const user = useSelector((state: userState) => state.user.user);
+    const [showModal, setShowModal] = useState(false);
     const createdDate = new Date(item.createdAt);
     const now = Date.now();
     const diffInMs = now - createdDate.getTime();
-    const [showModal, setShowModal] = useState(false);
-    const user = useSelector((state: userState) => state.user.user);
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     const calculateDays = (diffInHours: number) => {
         const calc = diffInHours / 24;

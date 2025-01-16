@@ -10,6 +10,10 @@ import axios from "@/config/axiosConfig"
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
+import Link from 'next/link';
+import Card from '@/components/Card';
+import { toast, Toaster } from 'sonner';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 interface userState {
     user: {
@@ -19,33 +23,62 @@ interface userState {
     }
 }
 
+interface singlePost {
+    userId: {
+        userName: string;
+    };
+    _id: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+    media: string;
+    likes: any[];
+    comments: any[];
+    __v: number;
+}
+
 interface tokenState {
     token: {
         accessToken: string,
     }
 }
 
+interface User {
+    userName: string,
+    _id: string,
+    posts: [],
+    createdAt: string,
+}
+
 const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
-    const [id, setId] = useState<string | null>(null);
+    const [id, setId] = useState<string>("");
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const [commentText, setCommentText] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
     const [loadingVal, setLoadingVal] = useState(33);
     const accessToken = useSelector((state: tokenState) => state.token.accessToken);
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState<singlePost[]>([]);
+    const [doesUserExist, setDoesUserExist] = useState(true);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
     const user = useSelector((state: userState) => state.user.user);
     useEffect(() => {
-        const resolveParams = async () => {
+        (async () => {
             const resolvedParams = await params;
+            console.log(resolvedParams.id);
             setId(resolvedParams.id);
-        };
-        resolveParams();
-    }, [params]);
+            if (!accessToken) {
+                return authenticateUserState();
+            }
+            if (accessToken) {
+                fetchPosts(resolvedParams.id);
+            }
+        })()
+    }, [params, accessToken]);
     const authenticateUserState = async () => {
         setLoadingVal(90);
         try {
             const { data } = await axios.post("/api/v1/protected");
-            console.log(data);
-            setLoading(false);
         } catch (error: any) {
             console.log(error);
             const errorMsg = error.response?.data.message;
@@ -54,28 +87,203 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
             }
         }
     }
-    useEffect(() => {
+    const fetchPosts = async (userName: string, page = 1) => {
+        try {
+            const { data } = await axios(`/api/v1/posts/user`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                params: {
+                    page,
+                    userName
+                },
+            });
+            console.log(data, "==>>>>>>");
+            if (data?.message === "You're all caught up!") {
+                setCurrentUser(data.user);
+                setPosts([]);
+                return
+            }
+            const correctPosts = data.posts.map((item: singlePost) => {
+                item.userId = {
+                    userName: data.userName,
+                };
+                return item
+            })
+            setCurrentUser(data);
+            setPosts(correctPosts);
+        } catch (error: any) {
+            console.log(error);
+            const errorMsg = error.response?.data?.message;
+            if (errorMsg === "User does not exist!") {
+                setDoesUserExist(false);
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+    const calculateDays = (time: string) => {
+        const createdDate = new Date(time);
+        const now = Date.now();
+        const diffInMs = now - createdDate.getTime();
+        const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+        const calc = diffInHours / 24;
+        const calc2 = calc.toString()[0];
+        const calc3 = diffInHours - +calc2 * 24;
+        if (diffInHours === 24) {
+            return '1 day'
+        }
+        if (calc > 1) {
+            if (calc2 === "1") {
+                if (calc3 === 0) {
+                    return `${calc2} day`;
+                } else if (calc3 === 1) {
+                    return `${calc2} day and ${calc3} hour`;
+                } else {
+                    return `${calc2} day and ${calc3} hours`;
+                }
+            } else {
+                if (calc3 === 0) {
+                    return `${calc2} days`;
+                } else if (calc3 === 1) {
+                    return `${calc2} days and ${calc3} hour`;
+                } else {
+                    return `${calc2} days and ${calc3} hours`;
+                }
+            }
+        }
+        return `${diffInHours} hrs`
+    }
+    const likePost = async (id: string, index: number) => {
+        console.log(id)
         if (!accessToken) {
-            authenticateUserState();
+            return toast("Unauthorized!", {
+                description: `You need to log in to like a post. Please log in and try again.`,
+                action: {
+                    label: "Login",
+                    onClick: () => router.push("/login"),
+                },
+            })
         }
-    }, []);
-    const item = {
-        userId: {
-            userName: "Shahzaib"
+        try {
+            const { data } = await axios.post(`/api/v1/post/${id}`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            console.log(data);
+            const confirmationMessage = data.message;
+            if (confirmationMessage === "Post Unliked") {
+                const { unLike } = data;
+                posts[index].likes = unLike.likes;
+                setPosts([...posts]);
+                return toast("Post Unliked!", {
+                    action: {
+                        label: "Undo",
+                        onClick: () => likePost(id, index),
+                    },
+                });
+            }
+            if (confirmationMessage === "Post liked") {
+                const { like } = data;
+                posts[index].likes = like.likes;
+                setPosts([...posts]);
+                return toast("Post liked!", {
+                    action: {
+                        label: "Undo",
+                        onClick: () => likePost(id, index),
+                    },
+                });
+            }
+        } catch (error) {
+            console.log(error);
         }
+    }
+    const commentOnPost = async (id: string, index: number) => {
+        if (!(commentText || commentText.trim() !== "")) {
+            return toast("Empty Comment!", {
+                description: `Cannot add an empty comment.`,
+                action: {
+                    label: "Ok",
+                    onClick: () => null,
+                },
+            })
+        }
+        if (!accessToken) {
+            return toast("Unauthorized!", {
+                description: `You need to log in to comment on a post. Please log in and try again.`,
+                action: {
+                    label: "Login",
+                    onClick: () => router.push("/login"),
+                },
+            })
+        }
+        try {
+            const { data } = await axios.post(`/api/v1/post/comment/${id}`, {
+                text: commentText
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            console.log(data);
+            posts[index].comments.push({ text: commentText, userId: { userName: user.userName } })
+            setPosts([...posts]);
+            setCommentText("");
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const goToNextPage = async () => {
+        if (posts.length !== 0) {
+            fetchPosts(id, currentPage + 1);
+            setCurrentPage(currentPage + 1)
+        }
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth',
+        });
+    }
+    const goToPreviousPage = async () => {
+        if (currentPage === 1) {
+            return null
+        }
+        fetchPosts(id, currentPage - 1);
+        setCurrentPage(currentPage - 1);
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth',
+        });
     }
     return (
         <>
-            {loading ? <div className='max-w-[200px] h-[80vh] mx-auto px-4 justify-center items-center mt-4 flex'><Progress value={loadingVal} /></div> : <div className='max-w-[640px] w-full mx-auto md:mt-16 mt-10'>
+            <Toaster />
+            {loading ? <div className='max-w-[200px] h-[80vh] mx-auto px-4 justify-center items-center mt-4 flex'><Progress value={loadingVal} /></div> : !doesUserExist ? <div className="flex items-center min-h-[85vh] px-4 py-12 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+                <div className="mx-auto space-y-6 text-center">
+                    <div className="space-y-3">
+                        <h1 className="text-4xl font-bold tracking-tighter text-[#1e40af] sm:text-5xl transition-transform hover:scale-110">404</h1>
+                        <p className="text-gray-500">User does not exist!</p>
+                    </div>
+                    <Link
+                        href="/"
+                        className="inline-flex h-10 items-center rounded-md bg-[#1e40af] px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-[#3252bb] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                        prefetch={false}
+                    >
+                        Return to Home
+                    </Link>
+                </div>
+            </div> : currentUser ? <div className='max-w-[640px] w-full mx-auto md:mt-16 mt-10'>
                 <div className='flex gap-x-3 mb-3 justify-center items-center'>
                     <div>
                         <Avatar className='w-20 h-20 bg-gray-300'>
-                            <AvatarFallback className='bg-gray-300 text-[1.5rem]'>{item.userId.userName[0] + item.userId.userName[1]}</AvatarFallback>
+                            <AvatarFallback className='bg-gray-300 text-[1.5rem]'>{currentUser.userName[0] + currentUser.userName[1]}</AvatarFallback>
                         </Avatar>
                     </div>
                     <div>
-                        <div><h1 className='text-[1.4rem] font-medium'>{item.userId.userName}</h1></div>
-                        <div><h1 className='text-md text-gray-600 font-medium'>Joined 13 days ago</h1></div>
+                        <div><h1 className='text-[1.4rem] font-medium'>{currentUser.userName}</h1></div>
+                        <div><h1 className='text-md text-gray-600 font-medium'>Joined {calculateDays(currentUser.createdAt)} ago</h1></div>
                     </div>
                 </div>
                 {user.userName.toString() === id?.toString() && <div className='mt-6 flex flex-col justify-center items-center'>
@@ -103,9 +311,36 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                 </div>}
                 <div className='mt-10 text-center'>
                     <h1 className='text-[22px] font-medium'>My Posts</h1>
-                    <Separator className='mt-6' />
+                    <Separator className='my-6' />
                 </div>
-            </div>}
+                <div>
+                    {posts.length > 0 ? posts.map((item: singlePost, index: number) => {
+                        return <Card key={item._id} likePost={likePost} setCommentText={setCommentText} commentOnPost={commentOnPost} index={index} item={item} />
+                    }) : posts.length === 0 ? <div className='w-full justify-center items-center my-4 flex'><h1>No posts found!</h1></div> : <></>}
+                </div>
+                <div className='h-3 w-full'></div>
+                <div>
+                    {!loading && <Pagination>
+                        <PaginationContent>
+                            <PaginationItem className='cursor-pointer' onClick={goToPreviousPage}>
+                                <PaginationPrevious />
+                            </PaginationItem>
+                            <PaginationItem className='cursor-pointer'>
+                                <PaginationLink isActive>
+                                    {currentPage}
+                                </PaginationLink>
+                            </PaginationItem>
+                            <PaginationItem>
+                                <PaginationEllipsis />
+                            </PaginationItem>
+                            <PaginationItem className='cursor-pointer' onClick={goToNextPage}>
+                                <PaginationNext />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>}
+                </div>
+                <div className='h-6 w-full'></div>
+            </div> : <></>}
         </>
     )
 }

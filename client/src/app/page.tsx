@@ -181,7 +181,7 @@ const Home = () => {
     }
     if (!accessToken) {
       return toast("Unauthorized!", {
-        description: `You need to log in to like a post. Please log in and try again.`,
+        description: `You need to log in to comment on a post. Please log in and try again.`,
         action: {
           label: "Login",
           onClick: () => router.push("/login"),

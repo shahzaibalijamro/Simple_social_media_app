@@ -103,7 +103,7 @@ const Card = ({ item, index, likePost, commentOnPost, setCommentText }: Card) =>
                 </div>
             </div>
             <div className='flex justify-center w-full gap-x-2 items-center'>
-                {item.likes.includes(user._id) ? <Button onClick={() => likePost(item._id, index)} className='bg-gray-200 hover:bg-gray-300 flex justify-center items-center flex-1  font-medium text-base text-[#1e40af]'>
+                {item.likes.includes(user?._id) ? <Button onClick={() => likePost(item._id, index)} className='bg-gray-200 hover:bg-gray-300 flex justify-center items-center flex-1  font-medium text-base text-[#1e40af]'>
                     <Image className='rotate-180' src={Like} width={20} alt='like' />
                     Unlike
                 </Button> : <Button onClick={() => likePost(item._id, index)} className='bg-gray-200 hover:bg-gray-300 flex justify-center items-center flex-1  font-medium text-base text-[#1e40af]'>
@@ -118,7 +118,7 @@ const Card = ({ item, index, likePost, commentOnPost, setCommentText }: Card) =>
             {showModal && <div>
                 {item.comments.length > 0 && <ScrollArea className="h-[200px] mt-2 w-full rounded-md border p-4">
                     {item.comments.map((item) => {
-                        return <div className=''>
+                        return <div key={item._id} className=''>
                             <div className='flex gap-x-3 justify-start items-center'>
                                 <div>
                                     <Avatar className='w-8 h-8'>

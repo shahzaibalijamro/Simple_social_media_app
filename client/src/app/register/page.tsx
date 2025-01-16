@@ -32,9 +32,13 @@ const register = () => {
         }
     }
     useEffect(() => {
-        authenticateUserState();
-    }, [])
-    console.log(accessToken);
+        if (accessToken) {
+            return router.replace("/");
+        }
+        if (!accessToken) {
+            authenticateUserState();
+        }
+    }, []);
     return (
         <div>
             {loading ? <Register /> : <div className='w-full h-[90vh] flex justify-center items-center max-w-[200px] mx-auto px-4'><Progress value={loadingVal} /></div>}

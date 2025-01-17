@@ -12,7 +12,7 @@ const registerUser = async (req, res) => {
         const user = await User.create({ userName, email, password });
         const { accessToken, refreshToken } = generateAccessandRefreshTokens(user);
         res
-            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 24 * 60 * 60 * 1000 })
+            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
             .status(201).json({
                 message: "New user created",
                 user,
@@ -57,7 +57,7 @@ const loginUser = async function (req, res) {
         })
         const { accessToken, refreshToken } = generateAccessandRefreshTokens(user)
         res
-            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 24 * 60 * 60 * 1000 })
+            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
             .status(200)
             .json({
                 message: "User successfully logged in!",
@@ -93,7 +93,7 @@ const deleteUser = async (req, res) => {
         res.clearCookie("refreshToken", {
             httpOnly: true,
             secure: false,
-            sameSite: 'lax',
+            sameSite: 'None',
             maxAge: 0,
             path: '/',
         });

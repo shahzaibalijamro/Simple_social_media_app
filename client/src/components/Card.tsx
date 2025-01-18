@@ -73,6 +73,38 @@ const Card = ({ item, index, likePost, commentOnPost, setCommentText }: Card) =>
         }
         return `${diffInHours} hrs`
     }
+    const calculateCommentDays = (createdAt:string) => {
+        const createdDate = new Date(createdAt);
+        const now = Date.now();
+        const diffInMs = now - createdDate.getTime();
+        const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+        const calc = diffInHours / 24;
+        const calc2 = calc.toString()[0];
+        const calc3 = diffInHours - +calc2 * 24;
+        if (diffInHours === 24) {
+            return '1 day'
+        }
+        if (calc > 1) {
+            if (calc2 === "1") {
+                if (calc3 === 0) {
+                    return `${calc2} day`;
+                } else if (calc3 === 1) {
+                    return `${calc2} day`;
+                } else {
+                    return `${calc2} day`;
+                }
+            } else {
+                if (calc3 === 0) {
+                    return `${calc2} days`;
+                } else if (calc3 === 1) {
+                    return `${calc2} days`;
+                } else {
+                    return `${calc2} days`;
+                }
+            }
+        }
+        return `${diffInHours} hrs`
+    }
     return (
         <div className='max-w-[640px] mb-4 bg-white rounded-[8px] border border-gray-300 p-3 mx-4 sm:mx-auto'>
             <div className='flex gap-x-3 mb-3 justify-start items-center'>
@@ -127,11 +159,11 @@ const Card = ({ item, index, likePost, commentOnPost, setCommentText }: Card) =>
                                 </div>
                                 <div>
                                     <div><h1 className='font-normal text-sm'>{item.userId.userName}</h1></div>
-                                    <div><h1 className='text-[15px] text-gray-600 font-medium'>{item.text}</h1></div>
+                                    <div><h1 className='text-[15px] text-gray-600 mt-[2px] font-medium'>{item.text}</h1></div>
                                 </div>
                             </div>
-                            <h1 className='text-gray-600 text-[12px] ms-[2px] mt-[2px]'>Just now!</h1>
-                            <Separator className='my-[5px]' />
+                            <h1 className='text-gray-600 text-[12px] ms-[2px] mt-[4px]'>{calculateCommentDays(item.createdAt)} ago</h1>
+                            <Separator className='my-[6px]' />
                         </div>
                     })}
                 </ScrollArea>}

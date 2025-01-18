@@ -9,7 +9,7 @@ function useRemoveUser() {
     const removeUserAndRedirect = () => {
         dispatch(removeAccessToken());
         dispatch(removeUser());
-        router.replace('/login');
+        router.replace('/');
     };
     return removeUserAndRedirect
 }

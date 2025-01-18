@@ -336,7 +336,7 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                 <AlertDialogDescription>
                                     This action cannot be undone. This will permanently delete your account
-                                    and remove your data from our servers.
+                                    and remove all your data including your posts from our servers.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

@@ -162,7 +162,7 @@ const Card = ({ item, index, likePost, commentOnPost, setCommentText }: Card) =>
                                     <div><h1 className='text-[15px] text-gray-600 mt-[2px] font-medium'>{item.text}</h1></div>
                                 </div>
                             </div>
-                            <h1 className='text-gray-600 text-[12px] ms-[2px] mt-[4px]'>{calculateCommentDays(item.createdAt)} ago</h1>
+                            <h1 className='text-gray-600 text-[12px] ms-[2px] mt-[4px]'>{calculateCommentDays(item.createdAt || new Date().toISOString())} ago</h1>
                             <Separator className='my-[6px]' />
                         </div>
                     })}

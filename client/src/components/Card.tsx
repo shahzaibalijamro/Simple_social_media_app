@@ -41,69 +41,75 @@ interface userState {
 const Card = ({ item, index, likePost, commentOnPost, setCommentText }: Card) => {
     const user = useSelector((state: userState) => state.user.user);
     const [showModal, setShowModal] = useState(false);
-    const createdDate = new Date(item.createdAt);
-    const now = Date.now();
-    const diffInMs = now - createdDate.getTime();
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const calculateDays = (diffInHours: number) => {
-        const calc = diffInHours / 24;
-        const calc2 = calc.toString()[0];
-        const calc3 = diffInHours - +calc2 * 24;
-        if (diffInHours === 24) {
-            return '1 day'
-        }
-        if (calc > 1) {
-            if (calc2 === "1") {
-                if (calc3 === 0) {
-                    return `${calc2} day`;
-                } else if (calc3 === 1) {
-                    return `${calc2} day and ${calc3} hour`;
-                } else {
-                    return `${calc2} day and ${calc3} hours`;
-                }
-            } else {
-                if (calc3 === 0) {
-                    return `${calc2} days`;
-                } else if (calc3 === 1) {
-                    return `${calc2} days and ${calc3} hour`;
-                } else {
-                    return `${calc2} days and ${calc3} hours`;
-                }
-            }
-        }
-        return `${diffInHours} hrs`
-    }
-    const calculateCommentDays = (createdAt:string) => {
-        const createdDate = new Date(createdAt);
+    const calculateDays = () => {
+        const createdDate = new Date(item.createdAt);
         const now = Date.now();
         const diffInMs = now - createdDate.getTime();
+        if (diffInMs < 1000 * 60 * 60) {
+            return "Just now!";
+        }
         const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
         const calc = diffInHours / 24;
         const calc2 = calc.toString()[0];
         const calc3 = diffInHours - +calc2 * 24;
         if (diffInHours === 24) {
-            return '1 day'
+            return '1 day ago'
         }
         if (calc > 1) {
             if (calc2 === "1") {
                 if (calc3 === 0) {
-                    return `${calc2} day`;
+                    return `${calc2} day ago`;
                 } else if (calc3 === 1) {
-                    return `${calc2} day`;
+                    return `${calc2} day and ${calc3} hour ago`;
                 } else {
-                    return `${calc2} day`;
+                    return `${calc2} day and ${calc3} hours ago`;
                 }
             } else {
                 if (calc3 === 0) {
-                    return `${calc2} days`;
+                    return `${calc2} days ago`;
                 } else if (calc3 === 1) {
-                    return `${calc2} days`;
+                    return `${calc2} days and ${calc3} hour ago`;
                 } else {
-                    return `${calc2} days`;
+                    return `${calc2} days and ${calc3} hours ago`;
                 }
             }
         }
-        return `${diffInHours} hrs`
+        return `${diffInHours} hrs ago`
+    }
+    const calculateCommentDays = (createdAt:string) => {
+        const createdDate = new Date(createdAt);
+        const now = Date.now();
+        const diffInMs = now - createdDate.getTime();
+        if (diffInMs < 1000 * 60 * 60) {
+            return "Just now!";
+        }
+        const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+        const calc = diffInHours / 24;
+        const calc2 = calc.toString()[0];
+        const calc3 = diffInHours - +calc2 * 24;
+        if (diffInHours === 24) {
+            return '1 day ago'
+        }
+        if (calc > 1) {
+            if (calc2 === "1") {
+                if (calc3 === 0) {
+                    return `${calc2} day ago`;
+                } else if (calc3 === 1) {
+                    return `${calc2} day ago`;
+                } else {
+                    return `${calc2} day ago`;
+                }
+            } else {
+                if (calc3 === 0) {
+                    return `${calc2} days ago`;
+                } else if (calc3 === 1) {
+                    return `${calc2} days ago`;
+                } else {
+                    return `${calc2} days ago`;
+                }
+            }
+        }
+        return `${diffInHours} hrs ago`
     }
     return (
         <div className='max-w-[640px] mb-4 bg-white rounded-[8px] border border-gray-300 p-3 mx-4 sm:mx-auto'>
@@ -115,7 +121,7 @@ const Card = ({ item, index, likePost, commentOnPost, setCommentText }: Card) =>
                 </div>
                 <div>
                     <div><h1 className='font-medium'>{item.userId.userName}</h1></div>
-                    <div><h1 className='text-sm text-gray-600 font-medium'>{calculateDays(diffInHours)} ago</h1></div>
+                    <div><h1 className='text-sm text-gray-600 font-medium'>{calculateDays()}</h1></div>
                 </div>
             </div>
             {item.content && <div className='text-start mb-2 px-1 text-gray-600'>
@@ -162,7 +168,7 @@ const Card = ({ item, index, likePost, commentOnPost, setCommentText }: Card) =>
                                     <div><h1 className='text-[15px] text-gray-600 mt-[2px] font-medium'>{item.text}</h1></div>
                                 </div>
                             </div>
-                            <h1 className='text-gray-600 text-[12px] ms-[2px] mt-[4px]'>{calculateCommentDays(item.createdAt || new Date().toISOString())} ago</h1>
+                            <h1 className='text-gray-600 text-[12px] ms-[2px] mt-[4px]'>{calculateCommentDays(item.createdAt)}</h1>
                             <Separator className='my-[6px]' />
                         </div>
                     })}

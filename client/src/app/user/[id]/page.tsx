@@ -123,33 +123,36 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
         const createdDate = new Date(time);
         const now = Date.now();
         const diffInMs = now - createdDate.getTime();
+        if (diffInMs < 1000 * 60 * 60) {
+            return "Just now!";
+        }
         const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
         const calc = diffInHours / 24;
         const calc2 = calc.toString()[0];
         const calc3 = diffInHours - +calc2 * 24;
         if (diffInHours === 24) {
-            return '1 day'
+            return '1 day ago'
         }
         if (calc > 1) {
             if (calc2 === "1") {
                 if (calc3 === 0) {
-                    return `${calc2} day`;
+                    return `${calc2} day ago`;
                 } else if (calc3 === 1) {
-                    return `${calc2} day and ${calc3} hour`;
+                    return `${calc2} day and ${calc3} hour ago`;
                 } else {
-                    return `${calc2} day and ${calc3} hours`;
+                    return `${calc2} day and ${calc3} hours ago`;
                 }
             } else {
                 if (calc3 === 0) {
-                    return `${calc2} days`;
+                    return `${calc2} days ago`;
                 } else if (calc3 === 1) {
-                    return `${calc2} days and ${calc3} hour`;
+                    return `${calc2} days and ${calc3} hour ago`;
                 } else {
-                    return `${calc2} days and ${calc3} hours`;
+                    return `${calc2} days and ${calc3} hours ago`;
                 }
             }
         }
-        return `${diffInHours} hrs`
+        return `${diffInHours} hrs ago`
     }
     const likePost = async (id: string, index: number) => {
         if (!accessToken) {
@@ -321,7 +324,7 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                     </div>
                     <div>
                         <div><h1 className='text-[1.4rem] font-medium'>{currentUser.userName}</h1></div>
-                        <div><h1 className='text-md text-gray-600 font-medium'>Joined {calculateDays(currentUser.createdAt)} ago</h1></div>
+                        <div><h1 className='text-md text-gray-600 font-medium'>Joined {calculateDays(currentUser.createdAt)}</h1></div>
                     </div>
                 </div>
                 {user.userName.toString() === id?.toString() && <div className='mt-6 flex flex-col justify-center items-center'>

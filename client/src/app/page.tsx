@@ -196,7 +196,12 @@ const Home = () => {
         }
       })
       console.log(data);
-      posts[index].comments.push({text:commentText,userId:{userName:user.userName}})
+      const currentDateTime = new Date().toISOString();
+      posts[index].comments.unshift({
+        text: commentText,
+        createdAt: currentDateTime,
+        userId: { userName: user.userName }
+      });
       setPosts([...posts]);
       setCommentText("");
     } catch (error) {

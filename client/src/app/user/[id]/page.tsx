@@ -226,7 +226,12 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                 }
             })
             console.log(data);
-            posts[index].comments.push({ text: commentText, userId: { userName: user.userName } })
+            const currentDateTime = new Date().toISOString();
+            posts[index].comments.unshift({
+                text: commentText,
+                createdAt: currentDateTime,
+                userId: { userName: user.userName }
+            });
             setPosts([...posts]);
             setCommentText("");
         } catch (error) {
@@ -277,13 +282,13 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
     }
     const deleteUser = async () => {
         try {
-            const {data} = await axios.delete("/api/v1/delete",{
+            const { data } = await axios.delete("/api/v1/delete", {
                 headers: {
-                    'Authorization' : `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${accessToken}`
                 }
             })
             removeUserAndRedirect();
-        } catch (error:any) {
+        } catch (error: any) {
             console.log(error);
             const errorMsg = error.response?.data?.message;
             if (errorMsg === "Error occurred while deleting the user") {

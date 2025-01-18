@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import React, { useEffect, useState } from 'react'
 import axios from "@/config/axiosConfig"
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
@@ -14,6 +14,8 @@ import Card from '@/components/Card';
 import { toast, Toaster } from 'sonner';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import useRemoveUser from '@/hooks/removeUser';
+import { removeAccessToken } from '@/config/redux/reducers/tokenSlice';
+import { removeUser } from '@/config/redux/reducers/userSlice';
 
 interface userState {
     user: {
@@ -58,6 +60,7 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
     const [posts, setPosts] = useState<singlePost[]>([]);
     const [doesUserExist, setDoesUserExist] = useState(true);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const dispatch = useDispatch();
     const removeUserAndRedirect = useRemoveUser();
     const router = useRouter();
     useEffect(() => {
@@ -264,7 +267,10 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
     const logOutUser = async () => {
         try {
             const { data } = await axios.post("/api/v1/logout");
-            removeUserAndRedirect();
+            console.log(data);
+            dispatch(removeAccessToken());
+            dispatch(removeUser());
+            router.replace('/');
         } catch (error: any) {
             console.log(error);
             if (error.response?.status === 500) {
@@ -276,7 +282,10 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                     },
                 })
             }
-            removeUserAndRedirect()
+            console.log(error);
+            dispatch(removeAccessToken());
+            dispatch(removeUser());
+            router.replace('/');
         }
         return null;
     }
@@ -287,7 +296,10 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                     'Authorization': `Bearer ${accessToken}`
                 }
             })
-            removeUserAndRedirect();
+            console.log(data);
+            dispatch(removeAccessToken());
+            dispatch(removeUser());
+            router.replace('/');
         } catch (error: any) {
             console.log(error);
             const errorMsg = error.response?.data?.message;
@@ -300,7 +312,10 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                     },
                 })
             }
-            removeUserAndRedirect();
+            console.log(error);
+            dispatch(removeAccessToken());
+            dispatch(removeUser());
+            router.replace('/');
         }
     }
     return (

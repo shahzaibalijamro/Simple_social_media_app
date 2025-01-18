@@ -100,6 +100,7 @@ const getAllPosts = async (req, res) => {
             { path: 'userId', select: 'userName' },
             {
                 path: 'comments',
+                options: { sort: { createdAt: -1 } },
                 populate: {
                     path: 'userId',
                     select: 'userName'

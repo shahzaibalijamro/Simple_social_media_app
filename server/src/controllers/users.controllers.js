@@ -1,18 +1,19 @@
 import mongoose from "mongoose";
 import User from "../models/user.models.js";
-import Post from "../models/post.models.js"
+import Post from "../models/post.models.js";
+import Comment from "../models/comment.models.js"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import { generateAccessandRefreshTokens } from "../utils/token.utils.js";
 
 // registers User
 const registerUser = async (req, res) => {
-    const { userName,email, password } = req.body;
+    const { userName, email, password } = req.body;
     try {
         const user = await User.create({ userName, email, password });
         const { accessToken, refreshToken } = generateAccessandRefreshTokens(user);
         res
-            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
+            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
             .status(201).json({
                 message: "New user created",
                 user,
@@ -57,7 +58,7 @@ const loginUser = async function (req, res) {
         })
         const { accessToken, refreshToken } = generateAccessandRefreshTokens(user)
         res
-            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
+            .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
             .status(200)
             .json({
                 message: "User successfully logged in!",
@@ -81,7 +82,12 @@ const deleteUser = async (req, res) => {
         const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
         session = await mongoose.startSession();
         session.startTransaction();
-        const deleteUserPosts = await Post.deleteMany({userId:{_id:decodedToken._id}},{session});
+        const deleteUserPosts = await Post.deleteMany({ userId: { _id: decodedToken._id } }, { session });
+        const deleteUserComments = await Comment.deleteMany({ userId: decodedToken._id }, { session });
+        const deleteUserLikes = await Post.updateMany(
+            { likes: decodedToken._id },
+            { $pull: { likes: decodedToken._id } },{session}
+        );
         const deleteUser = await User.findByIdAndDelete(decodedToken._id, { session });
         if (!deleteUser) {
             await session.abortTransaction();
@@ -92,7 +98,7 @@ const deleteUser = async (req, res) => {
         await session.commitTransaction();
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: 'None',
             maxAge: 0,
             path: '/',

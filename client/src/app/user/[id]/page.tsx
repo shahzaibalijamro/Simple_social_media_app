@@ -347,7 +347,7 @@ const Page = ({ params, }: { params: Promise<{ id: string }> }) => {
                         <div><h1 className='text-md text-gray-600 font-medium'>Joined {calculateDays(currentUser.createdAt)}</h1></div>
                     </div>
                 </div>
-                {user.userName.toString() === id?.toString() && <div className='mt-6 flex flex-col justify-center items-center'>
+                {user.userName?.toString() === id?.toString() && <div className='mt-6 flex flex-col justify-center items-center'>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button className='bg-[#e40000] hover:bg-[#e4000096]'>

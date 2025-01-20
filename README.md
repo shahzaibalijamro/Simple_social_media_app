@@ -4,7 +4,7 @@
 
 <p id="description">A MERN Stack Social Media App made completely using Next.js Shadcn and Tailwind CSS for frontend and Express+MongoDB and mongoose for backend.</p>
 
-  
+<h3>Backend Data Structure for MongoDB(https://app.eraser.io/workspace/vaIDUVNMMBqcnxNBzfV4?origin=share)</h3>
   
 <h2>🧐 Features</h2>
 

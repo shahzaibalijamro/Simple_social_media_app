@@ -1,6 +1,6 @@
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "https://simple-social-media-app-server.vercel.app";
+axios.defaults.baseURL = "https://social-media-app.askaritechnology.com";
 
 export default axios;
